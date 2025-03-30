@@ -36,3 +36,8 @@
     transform: rotate(360deg);
   }
 }
+
+/* Target Draft.js unordered list blocks */
+.public-DraftStyleDefault-ul {
+  margin-left: 0 !important;
+}
