@@ -1,11 +1,11 @@
 import styled from 'styled-components';
 
-// Styled components
-export const EditorContainer = styled.div`
-  display: flex;
-  height: 100%;
-  width: 100%;
-`;
+// // Styled components
+// export const EditorContainer = styled.div`
+//   display: flex;
+//   height: 100%;
+//   width: 100%;
+// `;
 
 export const LeftPanel = styled.div`
   width: 40%;
@@ -23,100 +23,134 @@ export const RightPanel = styled.div`
 `;
 
 export const InputSection = styled.div`
+  position: relative;
+  height: 100%;
+  padding: 16px;
+  padding-top: 32px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  padding: 20px;
+  box-sizing: border-box;
 `;
 
 export const EditorWrapper = styled.div`
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: white;
-  font-family: monospace;
-  padding: 10px;
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  
-  .DraftEditor-root {
-    flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  }
-  
-  .public-DraftStyleDefault-ul {
-    margin-left: 20px;
-  }
-  
-  .public-DraftStyleDefault-ol {
-    margin-left: 20px;
-  }
-  
-  .public-DraftStyleDefault-header {
-    font-weight: bold;
-  }
 `;
 
 export const ToolbarContainer = styled.div<{ isOpen: boolean }>`
-  display: flex;
-  flex-wrap: wrap;
-  padding: 5px 0;
-  margin-bottom: 5px;
+  padding: 8px;
   border-bottom: 1px solid #ddd;
-  max-height: ${props => props.isOpen ? '200px' : '40px'};
-  overflow: hidden;
-  transition: max-height 0.3s ease-in-out;
+  margin-bottom: 8px;
 `;
 
 export const ToolbarButton = styled.button<{ active?: boolean }>`
-  padding: 5px 10px;
-  margin-right: 5px;
-  margin-bottom: 5px;
-  background-color: ${props => props.active ? '#e6f7ff' : 'white'};
-  border: 1px solid #d9d9d9;
-  border-radius: 2px;
+  margin: 0 4px;
+  padding: 4px 8px;
+  border: none;
+  background: ${props => props.active ? '#e6e6e6' : 'transparent'};
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
   
   &:hover {
-    background-color: ${props => props.active ? '#e6f7ff' : '#f5f5f5'};
-  }
-  
-  &:focus {
-    outline: none;
+    background: #f0f0f0;
   }
 `;
 
 export const ToggleToolbarButton = styled.button`
-  padding: 5px 10px;
-  margin-right: 5px;
-  margin-bottom: 5px;
-  background-color: #f0f0f0;
-  border: 1px solid #d9d9d9;
-  border-radius: 2px;
+  border: none;
+  background: transparent;
   cursor: pointer;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
+  padding: 4px 8px;
+  color: #666;
   
   &:hover {
-    background-color: #e6e6e6;
-  }
-  
-  &:focus {
-    outline: none;
+    color: #333;
   }
 `;
 
-export const GraphContainer = styled.div`
-  flex: 1;
-  height: 100%;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
+// export const GraphContainer = styled.div`
+//   flex: 1;
+//   height: 100%;
+//   padding: 20px;
+//   display: flex;
+//   flex-direction: column;
   
-  & > div {
-    flex: 1;
+//   & > div {
+//     flex: 1;
+//   }
+// `;
+
+export const EditorContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+`;
+
+export const GraphContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+`;
+
+export const FloatingEditorPanel = styled.div`
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  
+  .handle {
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  
+  &:hover .handle {
+    opacity: 1;
   }
 `;
+
+export const CloseButton = styled.button`
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  border-radius: 50%;
+  
+  &:hover {
+    background: #f0f0f0;
+    color: #333;
+  }
+`;
+
+export const FloatingEditButton = styled.button`
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 8px 16px;
+  background: white;
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  z-index: 1000;
+  
+  &:hover {
+    background: #f5f5f5;
+  }
+`; 

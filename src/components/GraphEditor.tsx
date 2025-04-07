@@ -11,15 +11,17 @@ import { Project, Task, TaskRelationship, TaskStatus } from './types';
 import { deriveTaskSpecifications, debounce } from './utils';
 import { 
   EditorContainer,
-  LeftPanel,
-  RightPanel,
+  FloatingEditorPanel,
   InputSection,
   EditorWrapper,
   ToolbarContainer,
   ToggleToolbarButton,
   ToolbarButton,
-  GraphContainer
+  GraphContainer,
+  FloatingEditButton,
+  CloseButton
 } from './styles';
+import { Resizable } from 're-resizable';
 
 interface GraphEditorProps {
   project: Project;
@@ -40,6 +42,9 @@ const GraphEditor: React.FC<GraphEditorProps> = ({ project, onProjectUpdate }) =
   const [isToolbarOpen, setIsToolbarOpen] = useState(false);
   
   const [editorState, setEditorState] = useState(project.editorState);
+
+  // Add state for editor visibility
+  const [isEditorVisible, setIsEditorVisible] = useState(true);
 
   // Create a debounced version of project update
   const debouncedProjectUpdate = useCallback(
@@ -170,110 +175,131 @@ const GraphEditor: React.FC<GraphEditorProps> = ({ project, onProjectUpdate }) =
     onProjectUpdate(updatedProject);
   }, [editorState, relationships, project, onProjectUpdate]);
 
+  // Add toggle handler
+  const toggleEditor = () => {
+    setIsEditorVisible(!isEditorVisible);
+  };
+
   console.log(project)
 
   return (
     <EditorContainer>
-      <LeftPanel>
-        <InputSection>
-          <EditorWrapper>
-            <ToolbarContainer isOpen={isToolbarOpen}>
-              <ToggleToolbarButton onClick={toggleToolbar}>
-                {isToolbarOpen ? '▲ Hide Formatting' : '▼ Show Formatting'}
-              </ToggleToolbarButton>
-              
-              {/* Only render these when toolbar is open */}
-              {isToolbarOpen && (
-                <>
-                  <ToolbarButton 
-                    onClick={() => toggleInlineStyle('BOLD')}
-                    active={hasInlineStyle('BOLD')}
-                  >
-                    Bold
-                  </ToolbarButton>
-                  <ToolbarButton 
-                    onClick={() => toggleInlineStyle('ITALIC')}
-                    active={hasInlineStyle('ITALIC')}
-                  >
-                    Italic
-                  </ToolbarButton>
-                  <ToolbarButton 
-                    onClick={() => toggleInlineStyle('UNDERLINE')}
-                    active={hasInlineStyle('UNDERLINE')}
-                  >
-                    Underline
-                  </ToolbarButton>
-                  <ToolbarButton 
-                    onClick={() => toggleInlineStyle('STRIKETHROUGH')}
-                    active={hasInlineStyle('STRIKETHROUGH')}
-                  >
-                    Strikethrough
-                  </ToolbarButton>
-                  <ToolbarButton 
-                    onClick={() => toggleBlockType('header-one')}
-                    active={hasBlockType('header-one')}
-                  >
-                    H1
-                  </ToolbarButton>
-                  <ToolbarButton 
-                    onClick={() => toggleBlockType('header-two')}
-                    active={hasBlockType('header-two')}
-                  >
-                    H2
-                  </ToolbarButton>
-                  <ToolbarButton 
-                    onClick={() => toggleBlockType('unordered-list-item')}
-                    active={hasBlockType('unordered-list-item')}
-                  >
-                    Bullet List
-                  </ToolbarButton>
-                  <ToolbarButton 
-                    onClick={() => toggleBlockType('ordered-list-item')}
-                    active={hasBlockType('ordered-list-item')}
-                  >
-                    Numbered List
-                  </ToolbarButton>
-                  <ToolbarButton 
-                    onClick={() => toggleBlockType('code-block')}
-                    active={hasBlockType('code-block')}
-                  >
-                    Code
-                  </ToolbarButton>
-                  <ToolbarButton 
-                    onClick={() => toggleBlockType('blockquote')}
-                    active={hasBlockType('blockquote')}
-                  >
-                    Quote
-                  </ToolbarButton>
-                </>
-              )}
-            </ToolbarContainer>
-            <Editor
-              editorState={editorState}
-              onChange={handleEditorChange}
-              handleKeyCommand={handleKeyCommand}
-              keyBindingFn={mapKeyToEditorCommand}
-              placeholder="Start typing..."
-              customStyleMap={{
-                STRIKETHROUGH: {
-                  textDecoration: 'line-through',
-                }
-              }}
-            />
-          </EditorWrapper>
-        </InputSection>
-      </LeftPanel>
-      
-      <RightPanel>
-        <GraphContainer>
-          <ReactFlowVisualizer 
-            tasks={tasks} 
-            relationships={relationships}
-            onRelationshipsChange={handleRelationshipsChange}
-            onTaskStatusChange={handleTaskStatusChange}
-          />
-        </GraphContainer>
-      </RightPanel>
+      <GraphContainer>
+        <ReactFlowVisualizer 
+          tasks={tasks} 
+          relationships={relationships}
+          onRelationshipsChange={handleRelationshipsChange}
+          onTaskStatusChange={handleTaskStatusChange}
+        />
+      </GraphContainer>
+
+      {isEditorVisible ? (
+        <FloatingEditorPanel>
+          <Resizable
+            defaultSize={{
+              width: 500,
+              height: 400,
+            }}
+            minWidth={300}
+            minHeight={200}
+            maxWidth="90vw"
+            maxHeight="90vh"
+          >
+            <InputSection>
+              <CloseButton onClick={toggleEditor}>×</CloseButton>
+              <EditorWrapper>
+                <ToolbarContainer isOpen={isToolbarOpen}>
+                  <ToggleToolbarButton onClick={toggleToolbar}>
+                    {isToolbarOpen ? '▲ Hide Formatting' : '▼ Show Formatting'}
+                  </ToggleToolbarButton>
+                  
+                  {/* Only render these when toolbar is open */}
+                  {isToolbarOpen && (
+                    <>
+                      <ToolbarButton 
+                        onClick={() => toggleInlineStyle('BOLD')}
+                        active={hasInlineStyle('BOLD')}
+                      >
+                        Bold
+                      </ToolbarButton>
+                      <ToolbarButton 
+                        onClick={() => toggleInlineStyle('ITALIC')}
+                        active={hasInlineStyle('ITALIC')}
+                      >
+                        Italic
+                      </ToolbarButton>
+                      <ToolbarButton 
+                        onClick={() => toggleInlineStyle('UNDERLINE')}
+                        active={hasInlineStyle('UNDERLINE')}
+                      >
+                        Underline
+                      </ToolbarButton>
+                      <ToolbarButton 
+                        onClick={() => toggleInlineStyle('STRIKETHROUGH')}
+                        active={hasInlineStyle('STRIKETHROUGH')}
+                      >
+                        Strikethrough
+                      </ToolbarButton>
+                      <ToolbarButton 
+                        onClick={() => toggleBlockType('header-one')}
+                        active={hasBlockType('header-one')}
+                      >
+                        H1
+                      </ToolbarButton>
+                      <ToolbarButton 
+                        onClick={() => toggleBlockType('header-two')}
+                        active={hasBlockType('header-two')}
+                      >
+                        H2
+                      </ToolbarButton>
+                      <ToolbarButton 
+                        onClick={() => toggleBlockType('unordered-list-item')}
+                        active={hasBlockType('unordered-list-item')}
+                      >
+                        Bullet List
+                      </ToolbarButton>
+                      <ToolbarButton 
+                        onClick={() => toggleBlockType('ordered-list-item')}
+                        active={hasBlockType('ordered-list-item')}
+                      >
+                        Numbered List
+                      </ToolbarButton>
+                      <ToolbarButton 
+                        onClick={() => toggleBlockType('code-block')}
+                        active={hasBlockType('code-block')}
+                      >
+                        Code
+                      </ToolbarButton>
+                      <ToolbarButton 
+                        onClick={() => toggleBlockType('blockquote')}
+                        active={hasBlockType('blockquote')}
+                      >
+                        Quote
+                      </ToolbarButton>
+                    </>
+                  )}
+                </ToolbarContainer>
+                <Editor
+                  editorState={editorState}
+                  onChange={handleEditorChange}
+                  handleKeyCommand={handleKeyCommand}
+                  keyBindingFn={mapKeyToEditorCommand}
+                  placeholder="Start typing..."
+                  customStyleMap={{
+                    STRIKETHROUGH: {
+                      textDecoration: 'line-through',
+                    }
+                  }}
+                />
+              </EditorWrapper>
+            </InputSection>
+          </Resizable>
+        </FloatingEditorPanel>
+      ) : (
+        <FloatingEditButton onClick={toggleEditor}>
+          Edit
+        </FloatingEditButton>
+      )}
     </EditorContainer>
   );
 };
