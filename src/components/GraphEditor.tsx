@@ -180,8 +180,6 @@ const GraphEditor: React.FC<GraphEditorProps> = ({ project, onProjectUpdate }) =
     setIsEditorVisible(!isEditorVisible);
   };
 
-  console.log(project)
-
   return (
     <EditorContainer>
       <GraphContainer>

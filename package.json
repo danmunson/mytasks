@@ -1,18 +1,7 @@
 {
   "name": "mytasks",
   "version": "0.1.0",
-  "private": true,
   "dependencies": {
-    "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.2.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/dagre": "^0.7.52",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^16.18.126",
-    "@types/react": "^19.0.10",
-    "@types/react-dom": "^19.0.4",
-    "@viz-js/viz": "^3.11.0",
     "dagre": "^0.8.5",
     "draft-js": "^0.11.7",
     "re-resizable": "^6.11.2",
@@ -49,6 +38,15 @@
     ]
   },
   "devDependencies": {
-    "@types/draft-js": "^0.11.18"
+    "@types/draft-js": "^0.11.18",
+    "@types/dagre": "^0.7.52",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.18.126",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.2.0",
+    "@testing-library/user-event": "^13.5.0"
   }
 }
