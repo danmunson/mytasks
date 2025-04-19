@@ -1,4 +1,4 @@
-import { ContentState, convertToRaw, EditorState } from "draft-js";
+import { ContentState, EditorState } from "draft-js";
 import { Task, TaskMetadata, TaskRelationship } from "./types";
 
 /**

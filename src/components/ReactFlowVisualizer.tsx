@@ -230,7 +230,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
   const calculateSizeAndLayout = (nodeId: string) => {
     const children = childrenByParent.get(nodeId) || [];
     
-    if (children.length == 0) {
+    if (children.length === 0) {
       // Use simple size calculation for 0 or 1 child
       nodeSizes.set(nodeId, calculateNodeSize(nodeId));
       return;
@@ -580,19 +580,19 @@ const ReactFlowVisualizer: React.FC<ReactFlowVisualizerProps> = ({
       setNodes(newNodes);
       setEdges(newEdges);
     }
-  }, [tasks, relationships, parseTasksToGraph]);
+  }, [tasks, relationships, parseTasksToGraph, setNodes, setEdges]);
 
   // Handle layout button click
-  const onLayout = useCallback((direction: 'TB' | 'LR') => {
-    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-      nodes,
-      edges,
-      direction
-    );
+  // const onLayout = useCallback((direction: 'TB' | 'LR') => {
+  //   const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+  //     nodes,
+  //     edges,
+  //     direction
+  //   );
     
-    setNodes([...layoutedNodes]);
-    setEdges([...layoutedEdges]);
-  }, [nodes, edges]);
+  //   setNodes([...layoutedNodes]);
+  //   setEdges([...layoutedEdges]);
+  // }, [nodes, edges]);
 
   // Helper function to get a node's parent ID or null if it's a root node
   const getNodeParentId = useCallback((nodeId: string): string | null => {

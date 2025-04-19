@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import ReactFlowVisualizer from './ReactFlowVisualizer';
 import { 
   Editor, 
@@ -47,13 +47,12 @@ const GraphEditor: React.FC<GraphEditorProps> = ({ project, onProjectUpdate }) =
   const [isEditorVisible, setIsEditorVisible] = useState(true);
 
   // Create a debounced version of project update
-  const debouncedProjectUpdate = useCallback(
-    debounce((updatedProject: Project) => {
-      console.log("Saving to localStorage:", updatedProject.id);
-      onProjectUpdate(updatedProject);
-    }, 500), // Wait 1 second after last change before saving
-    [onProjectUpdate]
-  );
+  const debouncedSave = useCallback((updatedProject: Project) => {
+    console.log("Saving to localStorage:", updatedProject.id);
+    onProjectUpdate(updatedProject);
+  }, [onProjectUpdate]);
+
+  const debouncedProjectUpdate = useMemo(() => debounce(debouncedSave, 500), [debouncedSave]);
 
   // Update handleEditorChange to use debounced save
   const handleEditorChange = (newState: EditorState) => {
