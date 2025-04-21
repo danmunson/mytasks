@@ -1,6 +1,7 @@
 {
   "name": "mytasks",
   "version": "0.1.0",
+  "homepage": ".",
   "dependencies": {
     "dagre": "^0.8.5",
     "draft-js": "^0.11.7",

@@ -30,9 +30,6 @@ jobs:
       
       - name: Install dependencies
         run: npm ci
-
-      - name: Set public URL
-        run: export PUBLIC_URL='https://danmunson.github.io/mytasks'
       
       - name: Build
         run: npm run build
