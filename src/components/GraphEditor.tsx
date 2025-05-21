@@ -227,7 +227,9 @@ const GraphEditor: React.FC<GraphEditorProps> = ({ project, onProjectUpdate }) =
           >
             <InputSection>
               <CloseButton onClick={toggleEditor}>×</CloseButton>
-              <ShareButton onClick={handleShareProject}>Share Project</ShareButton> {/* Add Share Button here */}
+              <div style={{display: 'flex', justifyContent: 'right', alignItems: 'center'}}>
+                <ShareButton onClick={handleShareProject}>Share Project</ShareButton> {/* Add Share Button here */}
+              </div>
               <EditorWrapper>
                 <ToolbarContainer isOpen={isToolbarOpen}>
                   <ToggleToolbarButton onClick={toggleToolbar}>

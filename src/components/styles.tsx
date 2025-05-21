@@ -156,14 +156,29 @@ export const FloatingEditButton = styled.button`
 `; 
 
 export const ShareButton = styled.button`
-  margin: 0 4px 8px 4px; /* Added bottom margin */
-  padding: 4px 8px;
-  border: 1px solid #ccc; /* Added a border */
-  background: #f0f0f0; /* Light grey background */
-  border-radius: 4px;
+  padding: 8px 16px;
+  background: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+
   &:hover {
-    background: #e0e0e0; /* Darker on hover */
+    background: #3367d6;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 `;

@@ -171,7 +171,8 @@ class ProjectManagerV0 {
         }));
     }
 
-    public getProject(id: string): Project | undefined {
+    public getProject(id: string|null): Project | undefined {
+        if (!id) return undefined;
         const project = this.projects.get(id);
         return project;
     }

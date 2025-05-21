@@ -131,7 +131,7 @@ function App() {
             setProjects(projectManager.listProjects()); // Update the list
             console.log("Project from URL saved to local storage:", deserializedProject.id);
           }
-          
+
           setSelectedProject(deserializedProject);
           setSelectedProjectId(deserializedProject.id);
           console.log("Project loaded from URL:", deserializedProject.id);
@@ -154,36 +154,36 @@ function App() {
   useEffect(() => {
     // Load selected project when ID changes (or if set by URL load)
     if (selectedProjectId && !selectedProject) { // Only load if not already set by URL
-        const project = projectManager.getProject(selectedProjectId);
-        if (project) {
-            setSelectedProject(project);
-        } else {
-            // If project ID is set but project not found (e.g. invalid ID from old state or URL)
-            setSelectedProject(null);
-            setSelectedProjectId(null); 
-        }
-    } else if (!selectedProjectId) {
+      const project = projectManager.getProject(selectedProjectId);
+      if (project) {
+        setSelectedProject(project);
+      } else {
+        // If project ID is set but project not found (e.g. invalid ID from old state or URL)
         setSelectedProject(null);
+        setSelectedProjectId(null);
+      }
+    } else if (!selectedProjectId) {
+      setSelectedProject(null);
     }
   }, [selectedProjectId, projectManager, selectedProject]); // selectedProject added to avoid re-running if already set
 
   const handleCreateProject = () => {
-        const project = projectManager.getProject(selectedProjectId);
-        if (project) {
-            setSelectedProject(project);
-        } else {
-            setSelectedProject(null);
-            setSelectedProjectId(null);
-        }
+    const project = projectManager.getProject(selectedProjectId);
+    if (project) {
+      setSelectedProject(project);
+    } else {
+      setSelectedProject(null);
+      setSelectedProjectId(null);
+    }
     const projectId = `project_${Date.now()}`;
     const metadata: ProjectMetadata = {
-        version: '0',
-        id: projectId,
-        name: 'New Project',
-        description: '',
-        lastModified: Date.now()
+      version: '0',
+      id: projectId,
+      name: 'New Project',
+      description: '',
+      lastModified: Date.now()
     };
-    
+
     const newProject = projectManager.newProject(metadata);
     setProjects(projectManager.listProjects());
     setSelectedProjectId(projectId);
@@ -199,7 +199,7 @@ function App() {
   const handleDeleteProject = (id: string, e: React.MouseEvent) => {
     // Stop the click event from bubbling up to the parent
     e.stopPropagation();
-    
+
     if (window.confirm('Are you sure you want to delete this project?')) {
       projectManager.deleteProject(id);
       setProjects(projectManager.listProjects());
@@ -213,7 +213,7 @@ function App() {
   return (
     <AppContainer>
       <ProjectSidebar $isExpanded={isExpanded}>
-        <ExpandButton 
+        <ExpandButton
           $isExpanded={isExpanded}
           onClick={() => setIsExpanded(!isExpanded)}
           title={isExpanded ? "Collapse" : "Expand"}
@@ -234,7 +234,7 @@ function App() {
                 <ProjectTitle>{project.name}</ProjectTitle>
                 <ProjectDescription>{project.description}</ProjectDescription>
               </ProjectInfo>
-              <DeleteButton 
+              <DeleteButton
                 onClick={(e) => handleDeleteProject(project.id, e)}
                 title="Delete Project"
               >
