@@ -171,7 +171,8 @@ class ProjectManagerV0 {
         }));
     }
 
-    public getProject(id: string): Project | undefined {
+    public getProject(id: string|null): Project | undefined {
+        if (!id) return undefined;
         const project = this.projects.get(id);
         return project;
     }
@@ -191,3 +192,57 @@ class ProjectManagerV0 {
 }
 
 export class ProjectManager extends ProjectManagerV0 {}
+
+// Interface for serialized project data for URL
+interface SerializedProjectForUrl {
+    id: string;
+    name: string;
+    description: string;
+    version: '0';
+    editorStateRaw: any; // Raw editor state
+    relationshipsRaw: TaskRelationship[];
+    taskMetadataRaw: { [key: string]: TaskMetadata };
+}
+
+export function serializeProjectForUrl(project: Project): string {
+    const editorStateRaw = convertToRaw(project.editorState.getCurrentContent());
+    const taskMetadataRaw = Object.fromEntries(project.taskMetadata);
+
+    const serializedProjectForUrl: SerializedProjectForUrl = {
+        id: project.id,
+        name: project.name,
+        description: project.description,
+        version: project.version,
+        editorStateRaw,
+        relationshipsRaw: project.relationships,
+        taskMetadataRaw,
+    };
+
+    return JSON.stringify(serializedProjectForUrl);
+}
+
+export function deserializeProjectFromUrl(jsonString: string): Project | null {
+    try {
+        const parsedObject = JSON.parse(jsonString) as SerializedProjectForUrl;
+
+        const contentState = convertFromRaw(parsedObject.editorStateRaw);
+        const editorState = EditorState.createWithContent(contentState);
+        const taskMetadata = new Map(Object.entries(parsedObject.taskMetadataRaw));
+
+        const project: Project = {
+            id: parsedObject.id,
+            name: parsedObject.name,
+            description: parsedObject.description,
+            version: parsedObject.version,
+            editorState,
+            relationships: parsedObject.relationshipsRaw,
+            taskMetadata,
+            lastModified: Date.now(),
+        };
+
+        return project;
+    } catch (error) {
+        console.error('Error deserializing project from URL:', error);
+        return null;
+    }
+}
