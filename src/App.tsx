@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import GraphEditor from './components/GraphEditor';
-import { ProjectManager, ProjectMetadata, Project } from './components/types';
+import { ProjectManager, ProjectMetadata, Project, deserializeProjectFromUrl } from './components/types'; // Import deserializeProjectFromUrl
 import './App.css';
 
 const AppContainer = styled.div`
@@ -112,11 +112,62 @@ function App() {
   useEffect(() => {
     // Load project list on mount
     setProjects(projectManager.listProjects());
-  }, [projectManager]);
+
+    // Attempt to load project from URL query parameter on initial mount
+    const queryParams = new URLSearchParams(window.location.search);
+    const encodedProjectData = queryParams.get('project');
+
+    if (encodedProjectData) {
+      console.log("Found project data in URL, attempting to load...");
+      try {
+        const decodedJsonString = atob(encodedProjectData);
+        const deserializedProject = deserializeProjectFromUrl(decodedJsonString);
+
+        if (deserializedProject) {
+          // Check if this project already exists in local storage, if not, save it
+          // This makes it behave as if the user "imported" it.
+          if (!projectManager.getProject(deserializedProject.id)) {
+            projectManager.updateProject(deserializedProject); // This will save it
+            setProjects(projectManager.listProjects()); // Update the list
+            console.log("Project from URL saved to local storage:", deserializedProject.id);
+          }
+          
+          setSelectedProject(deserializedProject);
+          setSelectedProjectId(deserializedProject.id);
+          console.log("Project loaded from URL:", deserializedProject.id);
+
+          // Clear the query parameter from the URL
+          window.history.replaceState(null, '', window.location.pathname);
+        } else {
+          console.error("Failed to deserialize project from URL: Invalid project data format.");
+          // Clear the bad query parameter from the URL
+          window.history.replaceState(null, '', window.location.pathname);
+        }
+      } catch (error) {
+        console.error("Failed to decode project from URL:", error);
+        // Clear the bad query parameter from the URL
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+    }
+  }, [projectManager]); // projectManager added as dependency as it's used
 
   useEffect(() => {
-    // Load selected project when ID changes
-    if (selectedProjectId) {
+    // Load selected project when ID changes (or if set by URL load)
+    if (selectedProjectId && !selectedProject) { // Only load if not already set by URL
+        const project = projectManager.getProject(selectedProjectId);
+        if (project) {
+            setSelectedProject(project);
+        } else {
+            // If project ID is set but project not found (e.g. invalid ID from old state or URL)
+            setSelectedProject(null);
+            setSelectedProjectId(null); 
+        }
+    } else if (!selectedProjectId) {
+        setSelectedProject(null);
+    }
+  }, [selectedProjectId, projectManager, selectedProject]); // selectedProject added to avoid re-running if already set
+
+  const handleCreateProject = () => {
         const project = projectManager.getProject(selectedProjectId);
         if (project) {
             setSelectedProject(project);
@@ -124,12 +175,6 @@ function App() {
             setSelectedProject(null);
             setSelectedProjectId(null);
         }
-    } else {
-        setSelectedProject(null);
-    }
-  }, [selectedProjectId, projectManager]);
-
-  const handleCreateProject = () => {
     const projectId = `project_${Date.now()}`;
     const metadata: ProjectMetadata = {
         version: '0',

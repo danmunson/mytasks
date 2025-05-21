@@ -19,9 +19,11 @@ import {
   ToolbarButton,
   GraphContainer,
   FloatingEditButton,
-  CloseButton
+  CloseButton,
+  ShareButton // Import the new ShareButton
 } from './styles';
 import { Resizable } from 're-resizable';
+import { serializeProjectForUrl } from './types'; // Import serializeProjectForUrl
 
 interface GraphEditorProps {
   project: Project;
@@ -179,6 +181,27 @@ const GraphEditor: React.FC<GraphEditorProps> = ({ project, onProjectUpdate }) =
     setIsEditorVisible(!isEditorVisible);
   };
 
+  // Handle Share Project button click
+  const handleShareProject = async () => {
+    if (!project) return;
+
+    try {
+      const projectJson = serializeProjectForUrl(project);
+      const encodedString = btoa(projectJson);
+      const shareUrl = `${window.location.origin}/?project=${encodedString}`;
+      
+      await navigator.clipboard.writeText(shareUrl);
+      alert('Project link copied to clipboard!');
+    } catch (error) {
+      console.error('Failed to copy project link:', error);
+      const projectJson = serializeProjectForUrl(project); // Re-serialize for manual copy if needed
+      const encodedString = btoa(projectJson);
+      const shareUrl = `${window.location.origin}/?project=${encodedString}`;
+      alert('Failed to copy link. You can copy it manually from the console.');
+      console.log(shareUrl);
+    }
+  };
+
   return (
     <EditorContainer>
       <GraphContainer>
@@ -204,6 +227,7 @@ const GraphEditor: React.FC<GraphEditorProps> = ({ project, onProjectUpdate }) =
           >
             <InputSection>
               <CloseButton onClick={toggleEditor}>×</CloseButton>
+              <ShareButton onClick={handleShareProject}>Share Project</ShareButton> {/* Add Share Button here */}
               <EditorWrapper>
                 <ToolbarContainer isOpen={isToolbarOpen}>
                   <ToggleToolbarButton onClick={toggleToolbar}>

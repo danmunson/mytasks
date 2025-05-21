@@ -154,3 +154,16 @@ export const FloatingEditButton = styled.button`
     background: #f5f5f5;
   }
 `; 
+
+export const ShareButton = styled.button`
+  margin: 0 4px 8px 4px; /* Added bottom margin */
+  padding: 4px 8px;
+  border: 1px solid #ccc; /* Added a border */
+  background: #f0f0f0; /* Light grey background */
+  border-radius: 4px;
+  cursor: pointer;
+  
+  &:hover {
+    background: #e0e0e0; /* Darker on hover */
+  }
+`;
