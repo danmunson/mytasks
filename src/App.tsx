@@ -152,8 +152,9 @@ function App() {
   }, [projectManager]); // projectManager added as dependency as it's used
 
   useEffect(() => {
+    console.log('Circ Checker')
     // Load selected project when ID changes (or if set by URL load)
-    if (selectedProjectId && !selectedProject) { // Only load if not already set by URL
+    if (selectedProjectId) { // Only load if not already set by URL
       const project = projectManager.getProject(selectedProjectId);
       if (project) {
         setSelectedProject(project);
@@ -165,7 +166,7 @@ function App() {
     } else if (!selectedProjectId) {
       setSelectedProject(null);
     }
-  }, [selectedProjectId, projectManager, selectedProject]); // selectedProject added to avoid re-running if already set
+  }, [selectedProjectId, projectManager]); // selectedProject added to avoid re-running if already set
 
   const handleCreateProject = () => {
     const project = projectManager.getProject(selectedProjectId);
