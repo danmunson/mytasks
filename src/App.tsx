@@ -18,6 +18,26 @@ const ProjectSidebar = styled.div<{ $isExpanded: boolean }>`
   transition: width 0.3s ease;
 `;
 
+const TabContainer = styled.div<{ $isExpanded: boolean }>`
+  display: ${props => props.$isExpanded ? 'flex' : 'none'};
+  border-bottom: 1px solid #ddd;
+  margin: 0 10px;
+`;
+
+const Tab = styled.button<{ $isActive: boolean }>`
+  flex: 1;
+  padding: 8px 12px;
+  background: ${props => props.$isActive ? '#fff' : '#f5f5f5'};
+  border: none;
+  border-bottom: ${props => props.$isActive ? '2px solid #4CAF50' : '2px solid transparent'};
+  cursor: pointer;
+  font-size: 14px;
+  
+  &:hover {
+    background: ${props => props.$isActive ? '#fff' : '#eaeaea'};
+  }
+`;
+
 const ProjectList = styled.div<{ $isExpanded: boolean }>`
   flex: 1;
   overflow-y: auto;
@@ -88,19 +108,34 @@ const ProjectDescription = styled.div`
   margin-top: 4px;
 `;
 
-const DeleteButton = styled.button`
+const ActionButton = styled.button`
   background: none;
   border: none;
-  color: #f44336;
   cursor: pointer;
   font-size: 16px;
   padding: 5px;
   opacity: 0.7;
+  margin-left: 5px;
   
   &:hover {
     opacity: 1;
   }
 `;
+
+const DeleteButton = styled(ActionButton)`
+  color: #f44336;
+`;
+
+const CompleteButton = styled(ActionButton)<{ $isCompleted: boolean }>`
+  color: ${props => props.$isCompleted ? '#4CAF50' : '#666'};
+`;
+
+const ActionContainer = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+type TabType = 'active' | 'completed';
 
 function App() {
   const [projectManager] = useState(() => new ProjectManager());
@@ -108,6 +143,7 @@ function App() {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isExpanded, setIsExpanded] = useState(true);
+  const [activeTab, setActiveTab] = useState<TabType>('active');
 
   useEffect(() => {
     // Load project list on mount
@@ -211,6 +247,30 @@ function App() {
     }
   };
 
+  const handleToggleCompletion = (id: string, e: React.MouseEvent) => {
+    // Stop the click event from bubbling up to the parent
+    e.stopPropagation();
+    
+    projectManager.toggleProjectCompletion(id);
+    setProjects(projectManager.listProjects());
+    
+    // Update selected project if it's the one being toggled
+    if (selectedProjectId === id) {
+      const updatedProject = projectManager.getProject(id);
+      setSelectedProject(updatedProject || null);
+    }
+  };
+
+  const getFilteredProjects = () => {
+    return projects.filter(project => {
+      if (activeTab === 'active') {
+        return !project.completed;
+      } else {
+        return project.completed;
+      }
+    });
+  };
+
   return (
     <AppContainer>
       <ProjectSidebar $isExpanded={isExpanded}>
@@ -224,8 +284,22 @@ function App() {
         <NewProjectButton $isExpanded={isExpanded} onClick={handleCreateProject}>
           New Project
         </NewProjectButton>
+        <TabContainer $isExpanded={isExpanded}>
+          <Tab 
+            $isActive={activeTab === 'active'} 
+            onClick={() => setActiveTab('active')}
+          >
+            Active
+          </Tab>
+          <Tab 
+            $isActive={activeTab === 'completed'} 
+            onClick={() => setActiveTab('completed')}
+          >
+            Completed
+          </Tab>
+        </TabContainer>
         <ProjectList $isExpanded={isExpanded}>
-          {projects.map(project => (
+          {getFilteredProjects().map(project => (
             <ProjectItem
               key={project.id}
               $isSelected={project.id === selectedProjectId}
@@ -235,12 +309,21 @@ function App() {
                 <ProjectTitle>{project.name}</ProjectTitle>
                 <ProjectDescription>{project.description}</ProjectDescription>
               </ProjectInfo>
-              <DeleteButton
-                onClick={(e) => handleDeleteProject(project.id, e)}
-                title="Delete Project"
-              >
-                🗑️
-              </DeleteButton>
+              <ActionContainer>
+                <CompleteButton
+                  $isCompleted={project.completed || false}
+                  onClick={(e) => handleToggleCompletion(project.id, e)}
+                  title={project.completed ? "Mark as Active" : "Mark as Complete"}
+                >
+                  {project.completed ? '↺' : '✓'}
+                </CompleteButton>
+                <DeleteButton
+                  onClick={(e) => handleDeleteProject(project.id, e)}
+                  title="Delete Project"
+                >
+                  🗑️
+                </DeleteButton>
+              </ActionContainer>
             </ProjectItem>
           ))}
         </ProjectList>
