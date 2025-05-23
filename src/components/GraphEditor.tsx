@@ -14,16 +14,13 @@ import {
   FloatingEditorPanel,
   InputSection,
   EditorWrapper,
-  ToolbarContainer,
-  ToggleToolbarButton,
-  ToolbarButton,
   GraphContainer,
   FloatingEditButton,
   CloseButton,
-  ShareButton // Import the new ShareButton
 } from './styles';
 import { Resizable } from 're-resizable';
 import { serializeProjectForUrl } from './types'; // Import serializeProjectForUrl
+import ControlBar from './ControlBar';
 
 interface GraphEditorProps {
   project: Project;
@@ -40,8 +37,8 @@ const GraphEditor: React.FC<GraphEditorProps> = ({ project, onProjectUpdate }) =
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [relationships, setRelationships] = useState<TaskRelationship[]>(initialRelationships);
   
-  // State for toolbar visibility
-  const [isToolbarOpen, setIsToolbarOpen] = useState(false);
+  // State for formatting options visibility
+  const [isFormattingExpanded, setIsFormattingExpanded] = useState(false);
   
   const [editorState, setEditorState] = useState(project.editorState);
 
@@ -133,9 +130,9 @@ const GraphEditor: React.FC<GraphEditorProps> = ({ project, onProjectUpdate }) =
     return editorState.getCurrentInlineStyle().has(inlineStyle);
   };
 
-  // Toggle toolbar visibility
-  const toggleToolbar = () => {
-    setIsToolbarOpen(!isToolbarOpen);
+  // Toggle formatting options visibility
+  const toggleFormattingExpanded = () => {
+    setIsFormattingExpanded(!isFormattingExpanded);
   };
 
   // Handle relationships changes from ReactFlowVisualizer (for new edges and deletions)
@@ -227,81 +224,17 @@ const GraphEditor: React.FC<GraphEditorProps> = ({ project, onProjectUpdate }) =
           >
             <InputSection>
               <CloseButton onClick={toggleEditor}>×</CloseButton>
-              <div style={{display: 'flex', justifyContent: 'right', alignItems: 'center'}}>
-                <ShareButton onClick={handleShareProject}>Share Project</ShareButton> {/* Add Share Button here */}
-              </div>
               <EditorWrapper>
-                <ToolbarContainer isOpen={isToolbarOpen}>
-                  <ToggleToolbarButton onClick={toggleToolbar}>
-                    {isToolbarOpen ? '▲ Hide Formatting' : '▼ Show Formatting'}
-                  </ToggleToolbarButton>
-                  
-                  {/* Only render these when toolbar is open */}
-                  {isToolbarOpen && (
-                    <>
-                      <ToolbarButton 
-                        onClick={() => toggleInlineStyle('BOLD')}
-                        active={hasInlineStyle('BOLD')}
-                      >
-                        Bold
-                      </ToolbarButton>
-                      <ToolbarButton 
-                        onClick={() => toggleInlineStyle('ITALIC')}
-                        active={hasInlineStyle('ITALIC')}
-                      >
-                        Italic
-                      </ToolbarButton>
-                      <ToolbarButton 
-                        onClick={() => toggleInlineStyle('UNDERLINE')}
-                        active={hasInlineStyle('UNDERLINE')}
-                      >
-                        Underline
-                      </ToolbarButton>
-                      <ToolbarButton 
-                        onClick={() => toggleInlineStyle('STRIKETHROUGH')}
-                        active={hasInlineStyle('STRIKETHROUGH')}
-                      >
-                        Strikethrough
-                      </ToolbarButton>
-                      <ToolbarButton 
-                        onClick={() => toggleBlockType('header-one')}
-                        active={hasBlockType('header-one')}
-                      >
-                        H1
-                      </ToolbarButton>
-                      <ToolbarButton 
-                        onClick={() => toggleBlockType('header-two')}
-                        active={hasBlockType('header-two')}
-                      >
-                        H2
-                      </ToolbarButton>
-                      <ToolbarButton 
-                        onClick={() => toggleBlockType('unordered-list-item')}
-                        active={hasBlockType('unordered-list-item')}
-                      >
-                        Bullet List
-                      </ToolbarButton>
-                      <ToolbarButton 
-                        onClick={() => toggleBlockType('ordered-list-item')}
-                        active={hasBlockType('ordered-list-item')}
-                      >
-                        Numbered List
-                      </ToolbarButton>
-                      <ToolbarButton 
-                        onClick={() => toggleBlockType('code-block')}
-                        active={hasBlockType('code-block')}
-                      >
-                        Code
-                      </ToolbarButton>
-                      <ToolbarButton 
-                        onClick={() => toggleBlockType('blockquote')}
-                        active={hasBlockType('blockquote')}
-                      >
-                        Quote
-                      </ToolbarButton>
-                    </>
-                  )}
-                </ToolbarContainer>
+                <ControlBar
+                  isExpanded={isFormattingExpanded}
+                  onToggleExpanded={toggleFormattingExpanded}
+                  onShareProject={handleShareProject}
+                  editorState={editorState}
+                  onToggleInlineStyle={toggleInlineStyle}
+                  onToggleBlockType={toggleBlockType}
+                  hasInlineStyle={hasInlineStyle}
+                  hasBlockType={hasBlockType}
+                />
                 <Editor
                   editorState={editorState}
                   onChange={handleEditorChange}
