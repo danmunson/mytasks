@@ -25,6 +25,7 @@ export interface ProjectMetadata {
     name: string;
     description: string;
     lastModified: number;
+    completed?: boolean;
 }
 
 // Add this new interface
@@ -79,6 +80,7 @@ class ProjectManagerV0 {
                         name: serializedProject.name,
                         description: serializedProject.description,
                         lastModified: serializedProject.lastModified,
+                        completed: serializedProject.completed || false,
                         editorState,
                         relationships: serializedProject.relationshipsRaw,
                         taskMetadata: new Map(Object.entries(serializedProject.taskMetadataRaw)) // Convert object to Map
@@ -102,6 +104,7 @@ class ProjectManagerV0 {
                 name: project.name,
                 description: project.description,
                 lastModified: project.lastModified,
+                completed: project.completed || false,
                 editorStateRaw,
                 relationshipsRaw: project.relationships,
                 taskMetadataRaw: Object.fromEntries(project.taskMetadata) // Convert Map to object
@@ -144,6 +147,7 @@ class ProjectManagerV0 {
         
         const project: Project = {
             ...metadata,
+            completed: false,
             editorState,
             relationships: [],
             taskMetadata: new Map(), // Initialize empty Map
@@ -167,7 +171,8 @@ class ProjectManagerV0 {
             id: project.id,
             name: project.name,
             description: project.description,
-            lastModified: project.lastModified
+            lastModified: project.lastModified,
+            completed: project.completed || false
         }));
     }
 
@@ -189,6 +194,14 @@ class ProjectManagerV0 {
         }
         return result;
     }
+
+    public toggleProjectCompletion(id: string): void {
+        const project = this.projects.get(id);
+        if (project) {
+            project.completed = !project.completed;
+            this.updateProject(project);
+        }
+    }
 }
 
 export class ProjectManager extends ProjectManagerV0 {}
@@ -199,6 +212,7 @@ interface SerializedProjectForUrl {
     name: string;
     description: string;
     version: '0';
+    completed?: boolean;
     editorStateRaw: any; // Raw editor state
     relationshipsRaw: TaskRelationship[];
     taskMetadataRaw: { [key: string]: TaskMetadata };
@@ -213,6 +227,7 @@ export function serializeProjectForUrl(project: Project): string {
         name: project.name,
         description: project.description,
         version: project.version,
+        completed: project.completed || false,
         editorStateRaw,
         relationshipsRaw: project.relationships,
         taskMetadataRaw,
@@ -234,6 +249,7 @@ export function deserializeProjectFromUrl(jsonString: string): Project | null {
             name: parsedObject.name,
             description: parsedObject.description,
             version: parsedObject.version,
+            completed: parsedObject.completed || false,
             editorState,
             relationships: parsedObject.relationshipsRaw,
             taskMetadata,
