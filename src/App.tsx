@@ -135,6 +135,12 @@ const ActionContainer = styled.div`
   align-items: center;
 `;
 
+const Logo = styled.img`
+  width: 50px;
+  height: 50px;
+  margin: 10px;
+`;
+
 type TabType = 'active' | 'completed';
 
 function App() {
@@ -274,6 +280,10 @@ function App() {
   return (
     <AppContainer>
       <ProjectSidebar $isExpanded={isExpanded}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Logo src="/logo.png" alt="Dagado" />
+          <h2>Dagado</h2>
+        </div>
         <ExpandButton
           $isExpanded={isExpanded}
           onClick={() => setIsExpanded(!isExpanded)}
